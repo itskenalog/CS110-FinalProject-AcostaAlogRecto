@@ -3,13 +3,13 @@ import java.nio.*;
 
 public class ValuesFile{
 	private long recordCount; //number of records in the flie
-	private File f; // file (you can use file ints from here)
-	private final OFFSET_VALUE = 0;
+	private RandomAccessFile f; // file (you can use file ints from here)
+	private final int OFFSET_VALUE = 0;
 
 	public ValuesFile(String filename) throws IOException{
-		this.f = new File(filename);
+		File tf = new File(filename);
 
-		if(!f.exists()){
+		if(!tf.exists()){
 			this.recordCount = 0;
 			this.f = new RandomAccessFile(filename, "rwd");
 			//update the pointer to where it should start printing
