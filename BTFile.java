@@ -32,8 +32,23 @@ public class BTFile{
 	}
 
 	public Node read(long k){
-		//look for key within the tree then initialize a node and return it
-		return null;
+		//go to where node is
+		this.f.seek((256*k)+16);
+		//instantiate Node  
+		Node n = new Node();
+
+		//assign stuff based on what you read in the file
+		n.assignParent(this.f.readLong);
+
+		for(int i=0; i<n.accessOrder(); i++){
+			n.assignChild(this.f.readLong(), i);
+			n.assignKey(this.f.readInt(), i);
+			n.assignOffset(this.f.readLong(), i);
+		}
+
+		n.assignChild(this.f.readLong(), n.accessOrder()-1);
+
+		return n;
 	}
 
 	public void write(long k){
@@ -50,8 +65,8 @@ public class BTFile{
 		//write number of nodes into the file
 	}
 
-	public Node getRootNode(){
+	public long getRootNode(){
 		//first check the root node value in the file
-		return null;
+		return rootNode;
 	}
 }
