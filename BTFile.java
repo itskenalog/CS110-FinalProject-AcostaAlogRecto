@@ -20,7 +20,6 @@ public class BTFile{
 			this.f.writeLong(this.rootNode);
 			//initialize a root node
 			Node n = new Node();
-			n.makeEmptyNode();
 			//writeNode(n);
 		}
 		else{

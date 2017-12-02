@@ -11,7 +11,8 @@ public class Node{
 		this.parent = -1;
 		this.keys = new int[BT_ORDER];
 		this.offset = new long[BT_ORDER];
-		this.children = new long[BT_ORDER];	
+		this.children = new long[BT_ORDER+1];	
+		makeEmptyNode();
 	}
 
 	public void makeEmptyNode(){
