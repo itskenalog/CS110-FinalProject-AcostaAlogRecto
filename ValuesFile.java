@@ -33,7 +33,7 @@ public class ValuesFile{
 			int recordCount = 0;
 			int w = 0;
 			for (int i = 1; i <= 4; ++i){
-				raf.seek(8 + w * BYTES);
+				this.f.seek(8 + w * BYTES);
 				length = this.f.readShort();
 				byte[] byteArray = new byte[length];
 				this.f.read(byteArray);
