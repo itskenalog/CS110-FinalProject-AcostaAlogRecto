@@ -34,7 +34,7 @@ public class ValuesFile{
 			int w = 0;
 			for (int i = 1; i <= 4; ++i){
 				this.f.seek(8 + w * BYTES);
-				length = this.f.readShort();
+				int length = this.f.readShort();
 				byte[] byteArray = new byte[length];
 				this.f.read(byteArray);
 				System.out.println(length);
@@ -67,5 +67,10 @@ public class ValuesFile{
 		//access first to find out where to print
 		//check the length
 		//print the thing on the access based on the length of the string
+		this.f.seek(0);
+		int length = this.f.readShort();
+		byte[] byteArray = new byte[length];
+		this.f.read(byteArray);
+		System.out.println(new String(byteArray, "UTF8"));
 	}
 }
