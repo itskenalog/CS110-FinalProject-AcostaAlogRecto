@@ -3,12 +3,14 @@ import java.io.*;
 import java.nio.file.*;
 
 public class btdb{
-	private String[] input;
+	public static BTFile bt;
+	public static ValuesFile values;
 
 	public static void main(String args[]){
+		//initialize values and bt file
 		try{
-			BTFile bt = new BTFile(args[0]);
-			ValuesFile values = new ValuesFile(args[1]);
+			bt = new BTFile(args[0]);
+			values = new ValuesFile(args[1]);
 		}
 		catch(IOException ie){
 
@@ -17,10 +19,18 @@ public class btdb{
 		//accept input
 		Scanner in = new Scanner(System.in);
 		String inpu = in.nextLine();
-		input = inpu.split(" ");
+		String[] input = inpu.split(" ");
+
+		String value = "";
+		for(int i=2; i<value.length(); i++){
+			value += input[i];
+			if(i!=value.length()-1){
+				value+=" ";
+			}
+		}
 
 		if(input[0].equals("insert")){
-			//insert();
+			insert(Integer.parseInt(input[1]),value);
 		}
 		else if(input[0].equals("update")){
 			//update();
@@ -33,12 +43,19 @@ public class btdb{
 		}
 	}
 
-	public static Node search(long key, long node){
+	public static Node search(int key, long node){
 		//first you read from the file and get root node
 		//make a node based on what you read
-		Node n = bt.read(node);
+		System.out.println("Entering search method");
+		Node n = null;
+		try{
+			n = bt.read(node);
+		}
+		catch(IOException ie){
+
+		}
 		//keep checking the keys until its less then
-		for(int i=0; i<bt.accessOrder()-1; i++){
+		for(int i=0; i<n.accessOrder()-1; i++){
 			if(key<n.accessKey(i)){
 				//if less than, check if there's a child
 				if(n.accessChild(i)!=-1){
@@ -54,7 +71,7 @@ public class btdb{
 				//if key is in the node, return the node
 				return n;
 			}
-			else if(i==bt.accessOrder()-1&&key>n.accessKey(i)){
+			else if(i==n.accessOrder()-1&&key>n.accessKey(i)){
 				//if its the last one and its still greater than the last key, search the last child
 				if(n.accessChild(i+1)!=-1){
 					//if there is go to the child then search()
@@ -73,53 +90,66 @@ public class btdb{
 	public static void split(Node n){
 		//instantiate parent node of the node passed
 		//MAKE A CASE FOR WHEN THE PARENT DOESNT EXIST
-		if(n.getParent()!=-1){
-			Node parent = bt.read(n.getParent());
+		System.out.println("Entering split method");
+		Node parent = null;
+		if(n.accessParent()!=-1){
+			try{
+				parent = bt.read(n.accessParent());
+			}
+			catch(IOException ie){
+
+			}
 		}
 		//get the middle index of the tree (sabi ni Sir okay lang if not even split as long as it splits)
-		int middle = (n.accessOrder()/2)-1;
+		int middle = (n.accessOrder()/2);
 		//middle index goes up to the parent (get kung pangilang child siya, then it becomes the key with the same index)
 		int childNum = 0;
-		//while the first key of the child is greater than the key of the parent or you havent reached the end, keep counting
+		//while the first key of the child is not the same as the location of the child, keep counting
 		for(int i=0; i<parent.accessOrder()-1; i++){
-			if(parent.accessKey(i)==-1||n.accessKey(0)>parent.accessKey(i)){
+			if(n.getLocation()==parent.accessChild(i)){
+				childNum = i;
 				break;
 			}
-			childNum++;
 		}
 		//move all the components one space
 		for(int i=parent.accessOrder()-1; i>childNum; i--){
-			parent.assignKey(parent.accessKey(i),i+1);
-			parent.assignChild(parent.accessChild(i),i+1);
-			parent.assignOffset(parent.accessOffset(i),i+1);
+			parent.assignAll(parent.accessChild(i), parent.accessKey(i), parent.accessOffset(i), i+1);
 		}
 		//put Key in its respective place
 		parent.assignKey(n.accessKey(middle), childNum);
+		parent.assignOffset(n.accessOffset(middle), childNum);
 
 		//left side becomes new node thats a left child
 		Node leftChild = new Node();
 		//put all values before middle in left child
 		for(int i=0; i<middle; i++){
-			leftChild.assignKey(n.accessKey(i), i);
-			leftChild.assignChild(n.accessChild(i), i);
-			leftChild.assignOffset(n.accessOffset(i), i);
+			leftChild.assignAll(n.accessChild(i), n.accessKey(i), n.accessOffset(i), i);
 		}
+		leftChild.assignParent(parent.getLocation());
 		//write into BTree file
-		//parent.assignChild(leftChild());
+		parent.assignChild(leftChild.getLocation(), childNum);
 
 		//right side becomes new node thats a right child
 		Node rightChild = new Node();
 		//put all values before middle in left child
-		int counter = 0;
-		for(int i=middle+1; i<n.accessOrder()-1; i++){
-			leftChild.assignKey(n.accessKey(i), i);
-			leftChild.assignChild(n.accessChild(i), i);
-			leftChild.assignOffset(n.accessOffset(i), i);
+		for(int i=1; i<=middle; i++){
+			if(middle+i!=rightChild.accessOrder());
+			rightChild.assignAll(n.accessChild(middle+i), n.accessKey(middle+i), n.accessOffset(middle+i), i-1);
 		}
+		rightChild.assignParent(parent.getLocation());
 		//write it all to the Btree file
+		parent.assignChild(rightChild.getLocation(), childNum+1);
+
+		//Then check if parent is overflowing
+		if(parent.accessKey(parent.accessOrder())!=0){
+			//If it is, you have to split parent
+			split(parent);
+		}
+
 	}
 
-	public static void insert(long key, String[] value){
+	public static void insert(int key, String value){
+		System.out.println("Entering insert method");
 		//first, find where it is in the array and get the node
 		Node location = search(key, bt.getRootNode());
 
@@ -136,9 +166,7 @@ public class btdb{
 			//if its smaller than one of the keys, push all the other values back then put the key there
 			if(key<location.accessKey(i)){
 				for(int j=location.accessOrder()-1; j>i; j--){
-					location.assignKey(location.acessKey(j), j+1);
-					location.assignChild(location.accessChild(j), j+1);
-					location.assignOffset(location.accessOffset(j), j+1);
+					location.assignAll(location.accessChild(j), location.accessKey(j), location.accessOffset(j), j+1);
 				}
 
 				location.assignKey(key,i);
@@ -158,11 +186,11 @@ public class btdb{
 		//then write the same node to the Btree to update changes
 	}
 
-	public static void update(long key, String[] value){
+	public static void update(int key, String value){
 
 	}
 
-	public static void select(long key){
+	public static void select(int key){
 
 	}
 }

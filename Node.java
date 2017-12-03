@@ -2,13 +2,13 @@
 
 public class Node{
 	private long parent; //parent node 
+	private long location; //place in the BTfile;
 	private int[] keys; //array for the keys
 	private long[] offset; //position
 	private long[] children; //array for children
 	private final int BT_ORDER = 5; //order of the trees
 
 	public Node(){
-		this.parent = -1;
 		this.keys = new int[BT_ORDER];
 		this.offset = new long[BT_ORDER];
 		this.children = new long[BT_ORDER+1];	
@@ -22,7 +22,7 @@ public class Node{
 		for(int i=0; i<BT_ORDER; i++){
 			this.children[i]=-1;
 		}
-
+		
 		for(int i=0; i<BT_ORDER-1; i++){
 			this.keys[i]=-1;
 		}
@@ -47,6 +47,12 @@ public class Node{
 		this.keys[i] = k;
 	}
 
+	public void assignAll(long c, int k, long o, int i){
+		this.children[i] = k;
+		this.keys[i] = k;
+		this.offset[i] = k;
+	}
+
 	public void assignParent(long k){
 		//assign parent the integer
 		this.parent = k;
@@ -57,9 +63,13 @@ public class Node{
 		return this.keys[i];
 	}
 
-	public long accessChild(long i){
+	public long accessChild(int i){
 		//get the cth child in array then return it
 		return this.children[i];
+	}
+
+	public long accessOffset(int i){
+		return this.offset[i];
 	}
 
 	public long accessParent(){
@@ -70,4 +80,13 @@ public class Node{
 		//returns order of the node and the tree
 		return this.BT_ORDER;
 	}
+
+	public void setLocation(long l){
+		location = l;
+	}
+
+	public long getLocation(){
+		return location;
+	}
+
 }
