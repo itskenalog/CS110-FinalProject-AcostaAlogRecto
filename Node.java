@@ -19,15 +19,15 @@ public class Node{
 		//assign everything to -1
 		this.parent = -1;
 
-		for(int i=0; i<BT_ORDER; i++){
+		for(int i=0; i<BT_ORDER+1; i++){
 			this.children[i]=-1;
 		}
 
-		for(int i=0; i<BT_ORDER-1; i++){
+		for(int i=0; i<BT_ORDER; i++){
 			this.keys[i]=-1;
 		}
 
-		for(int i=0; i<BT_ORDER-1; i++){
+		for(int i=0; i<BT_ORDER; i++){
 			this.offset[i]=-1;
 		}
 	}
@@ -48,9 +48,9 @@ public class Node{
 	}
 
 	public void assignAll(long c, long k, long o, int i){
-		this.children[i] = k;
+		this.children[i] = c;
 		this.keys[i] = (int)k;
-		this.offset[i] = k;
+		this.offset[i] = o;
 	}
 
 	public void assignParent(long k){
