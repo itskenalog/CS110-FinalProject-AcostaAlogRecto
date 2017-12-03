@@ -175,7 +175,7 @@ public class btdb{
 				location.assignKey(key,i);
 				//put value in values file
 				values.write(value);
-				System.out.println("Sucessfully uploaded in values file");
+				System.out.println("Successfully uploaded in values file");
 				
 				//get the offset
 				//assign offset to the offset key
@@ -224,6 +224,18 @@ public class btdb{
 	}
 
 	public static void update(int key, String value){
+		Node location = search(key, bt.getRootNode());
+		if (location == null){
+			System.out.println("error, node not found");
+		}
+		else{
+			for(int i=0; i<location.accessOrder()-1; i++){
+				location.assignKey(key,i);
+				values.write(value);
+				System.out.println("Successfully updated");
+			}
+
+		}
 
 	}
 
