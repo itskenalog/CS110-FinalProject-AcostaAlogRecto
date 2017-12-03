@@ -214,6 +214,11 @@ public class btdb{
 		else{
 			System.out.println(location.getLocation());
 			//if not then just update the current node in the bt file
+			System.out.print(location.accessParent()+" ");
+			for(int i=0; i<location.accessOrder()-1; i++){
+				System.out.print(location.accessChild(i)+" "+location.accessKey(i)+" "+location.accessOffset(i)+" ");
+			}
+			System.out.println(location.accessChild(accessOrder()-1));			
 			bt.update(location, location.getLocation());
 		}
 	}

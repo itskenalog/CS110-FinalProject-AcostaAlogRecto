@@ -47,7 +47,7 @@ public class BTFile{
 		n.assignParent(this.f.readLong());
 
 		for(int i=0; i<n.accessOrder()-1; i++){
-			n.assignAll(this.f.readLong(), this.f.readInt(), this.f.readLong(), i);
+			n.assignAll(this.f.readLong(), this.f.readLong(), this.f.readLong(), i);
 		}
 
 		n.assignChild(this.f.readLong(), n.accessOrder()-1);

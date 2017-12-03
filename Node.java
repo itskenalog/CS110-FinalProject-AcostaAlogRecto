@@ -22,7 +22,7 @@ public class Node{
 		for(int i=0; i<BT_ORDER; i++){
 			this.children[i]=-1;
 		}
-		
+
 		for(int i=0; i<BT_ORDER-1; i++){
 			this.keys[i]=-1;
 		}
@@ -47,9 +47,9 @@ public class Node{
 		this.keys[i] = k;
 	}
 
-	public void assignAll(long c, int k, long o, int i){
+	public void assignAll(long c, long k, long o, int i){
 		this.children[i] = k;
-		this.keys[i] = k;
+		this.keys[i] = (int)k;
 		this.offset[i] = k;
 	}
 
