@@ -22,15 +22,21 @@ public class btdb{
 		String[] input = inpu.split(" ");
 
 		String value = "";
-		for(int i=2; i<value.length(); i++){
-			value += input[i];
+		for(int i=2; i<input.length; i++){
+			value = value+input[i];
 			if(i!=value.length()-1){
 				value+=" ";
 			}
 		}
 
 		if(input[0].equals("insert")){
-			insert(Integer.parseInt(input[1]),value);
+			System.out.println(input[1]+" "+value);
+			try{
+				insert(Integer.parseInt(input[1]),value);
+			}
+			catch(IOException ie){
+
+			}
 		}
 		else if(input[0].equals("update")){
 			//update();
@@ -52,33 +58,40 @@ public class btdb{
 			n = bt.read(node);
 		}
 		catch(IOException ie){
-
+			System.out.println("Cannot read node");
 		}
 		//keep checking the keys until its less then
 		for(int i=0; i<n.accessOrder()-1; i++){
+			System.out.println(n.accessKey(i));
 			if(key<n.accessKey(i)){
 				//if less than, check if there's a child
 				if(n.accessChild(i)!=-1){
 					//if there is go to the child then search()
+					System.out.println("There is a child so searching");
 					search(key, n.accessChild(i));
 				}
 				else{
 					//else return the location of where you place it
+					System.out.println("There is no child. Returning node");
 					return n;
 				}
 			}
 			else if(key==n.accessKey(i)){
 				//if key is in the node, return the node
+				System.out.println("Key found. Returning node");
 				return n;
 			}
-			else if(i==n.accessOrder()-1&&key>n.accessKey(i)){
+			else if(i==n.accessOrder()-2&&key>n.accessKey(i)){
 				//if its the last one and its still greater than the last key, search the last child
+				System.out.println("Greater than all the keys. Searching last child");
 				if(n.accessChild(i+1)!=-1){
+					System.out.println("Found last child. Searching the child");
 					//if there is go to the child then search()
 					search(key, n.accessChild(i+1));
 				}
 				else{
 					//else return the node itself
+					System.out.println("No child. Returning this node");
 					return n;
 				}
 			}
@@ -148,42 +161,61 @@ public class btdb{
 
 	}
 
-	public static void insert(int key, String value){
+	public static void insert(int key, String value) throws IOException{
 		System.out.println("Entering insert method");
 		//first, find where it is in the array and get the node
 		Node location = search(key, bt.getRootNode());
-
+		System.out.println("Found location");
 		//case 1: node is not full, insert normally
 		//first, keep comparing the values for all the keys in the node
 		for(int i=0; i<location.accessOrder()-1; i++){
 			//if it reaches negative 1 insert it there
 			if(location.accessKey(i)==-1){
+				System.out.println("Found -1. Inserting it here");
 				location.assignKey(key,i);
 				//put value in values file
+				values.write(value);
+				System.out.println("Sucessfully uploaded in values file");
+				
 				//get the offset
 				//assign offset to the offset key
+				location.assignOffset(values.getRecordCount()-1, i);
+				break;
+			}
+			//if key is found, dont do any of the operations.Place error message
+			if(key==location.accessKey(i)){
+				System.out.println("ERROR: "+key+" already exists.");
+				break;
 			}
 			//if its smaller than one of the keys, push all the other values back then put the key there
 			if(key<location.accessKey(i)){
+				System.out.println("Key must be inserted. Pushing all the values backward");
 				for(int j=location.accessOrder()-1; j>i; j--){
 					location.assignAll(location.accessChild(j), location.accessKey(j), location.accessOffset(j), j+1);
 				}
-
+				System.out.println("Sucessfully pushed. Inserting");
 				location.assignKey(key,i);
 				//put value in values file
+				values.write(value);
+				System.out.println("Sucessfully uploaded in values file");
+
 				//get the offset
 				//assign offset to the offset key
+				location.assignOffset(values.getRecordCount()-1, i);
+				break;
 			}
-
 			//whatever operation you do in the keys array, you do it in the offset array and children array (if they have children)
 		}
 		//check if the node is full, this means there is an element in the last node
-		if(location.accessKey(location.accessOrder())!=0){
+		if(location.accessKey(location.accessOrder()-1)!=0){
 			//then split it
-			//split();
+			split(location);
 		}
-		
-		//then write the same node to the Btree to update changes
+		else{
+			System.out.println(location.getLocation());
+			//if not then just update the current node in the bt file
+			bt.update(location, location.getLocation());
+		}
 	}
 
 	public static void update(int key, String value){

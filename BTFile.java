@@ -57,33 +57,36 @@ public class BTFile{
 
 	public void write(Node n) throws IOException{
 		//a node, then update the values in the entire node based on what you are given
-		this.f.seek(BYTESIZE*numNodes+START_OF_ENTRIES);
-		this.f.writeLong(n.accessParent());
+		update(n, numNodes);
 
-		for(int i=0; i<n.accessOrder()-1; i++){
-			this.f.writeLong(n.accessChild(i));
-			this.f.writeInt(n.accessKey(i));
-			this.f.writeLong(n.accessOffset(i));
-		}
-
-		this.f.writeLong(n.accessChild(n.accessOrder()-1));
+		//update numNodes;
+		numNodes++;
+		this.f.seek(OFFSET_VALUE);
+		this.f.writeLong(this.numNodes);
 
 		//set location of Node once you print it (it will be recordCount-1)
 		n.setLocation(numNodes-1);
 	}
 
-	public void update(){
+	public void update(Node n, long l)throws IOException{
 		//change an existing node based on the location given;
+		this.f.seek(BYTESIZE*l+START_OF_ENTRIES);
+		this.f.writeLong(n.accessParent());
+
+		for(int i=0; i<n.accessOrder()-1; i++){
+			this.f.writeLong(n.accessChild(i));
+			this.f.writeLong(n.accessKey(i));
+			this.f.writeLong(n.accessOffset(i));
+		}
+
+		this.f.writeLong(n.accessChild(n.accessOrder()-1));
 	}
 
-	public void updateRootNode(long n){
+	public void updateRootNode(long n)throws IOException{
 		rootNode = n;
-		//write root node into the file
-	}
-
-	public void updateNumNodes(long n){
-		numNodes = n;
-		//write number of nodes into the file
+		//write root node into the filethis.f.seek(OFFSET_VALUE);
+		this.f.seek(OFFSET_VALUE+START_OF_ENTRIES/2);
+		this.f.writeLong(this.rootNode);
 	}
 
 	public long getRootNode(){
