@@ -218,7 +218,7 @@ public class btdb{
 			for(int i=0; i<location.accessOrder()-1; i++){
 				System.out.print(location.accessChild(i)+" "+location.accessKey(i)+" "+location.accessOffset(i)+" ");
 			}
-			System.out.println(location.accessChild(accessOrder()-1));			
+			System.out.println(location.accessChild(location.accessOrder()-1));			
 			bt.update(location, location.getLocation());
 		}
 	}
