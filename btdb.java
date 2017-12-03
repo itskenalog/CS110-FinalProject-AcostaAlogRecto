@@ -60,11 +60,17 @@ public class btdb{
 		catch(IOException ie){
 			System.out.println("Cannot read node");
 		}
+		System.out.print(n.accessParent()+" ");
+			for(int i=0; i<n.accessOrder()-1; i++){
+				System.out.print(n.accessChild(i)+" "+n.accessKey(i)+" "+n.accessOffset(i)+" ");
+			}
+			System.out.println(n.accessChild(n.accessOrder()-1));	
 		//keep checking the keys until its less then
 		for(int i=0; i<n.accessOrder()-1; i++){
 			System.out.println(n.accessKey(i));
 			if(key<n.accessKey(i)){
 				//if less than, check if there's a child
+				System.out.println(n.accessChild(i));
 				if(n.accessChild(i)!=-1){
 					//if there is go to the child then search()
 					System.out.println("There is a child so searching");
@@ -154,7 +160,7 @@ public class btdb{
 		parent.assignChild(rightChild.getLocation(), childNum+1);
 
 		//Then check if parent is overflowing
-		if(parent.accessKey(parent.accessOrder())!=0){
+		if(parent.accessKey(parent.accessOrder())!=-1){
 			//If it is, you have to split parent
 			split(parent);
 		}
@@ -190,9 +196,16 @@ public class btdb{
 			//if its smaller than one of the keys, push all the other values back then put the key there
 			if(key<location.accessKey(i)){
 				System.out.println("Key must be inserted. Pushing all the values backward");
-				for(int j=location.accessOrder()-1; j>i; j--){
+				for(int j=location.accessOrder()-2; j>=i; j--){
+					System.out.println(j);
 					location.assignAll(location.accessChild(j), location.accessKey(j), location.accessOffset(j), j+1);
 				}
+				System.out.print(location.accessParent()+" ");
+				for(int a=0; a<location.accessOrder()-1; a++){
+					System.out.print(location.accessChild(a)+" "+location.accessKey(a)+" "+location.accessOffset(a)+" ");
+				}
+				System.out.println(location.accessChild(location.accessOrder()-1));
+				System.out.println(location.accessKey(location.accessOrder()-1));	
 				System.out.println("Sucessfully pushed. Inserting");
 				location.assignKey(key,i);
 				//put value in values file
@@ -206,8 +219,8 @@ public class btdb{
 			}
 			//whatever operation you do in the keys array, you do it in the offset array and children array (if they have children)
 		}
-		//check if the node is full, this means there is an element in the last node
-		if(location.accessKey(location.accessOrder()-1)!=0){
+		//check if the node is full, this means there is an element in the last node	
+		if(location.accessKey(location.accessOrder()-1)!=-1){
 			//then split it
 			split(location);
 		}
