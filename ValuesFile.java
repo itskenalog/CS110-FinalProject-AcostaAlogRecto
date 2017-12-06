@@ -27,10 +27,6 @@ public class ValuesFile{
 		}
 	}
 
-	public long getRecordCount(){
-		return recordCount;
-	}
-
 	public String access(Long s) throws IOException{
 		//get a value from the file
 		//you look for the word in the file
@@ -60,5 +56,9 @@ public class ValuesFile{
 		this.f.seek(OFFSET_VALUE);
 		this.f.writeLong(recordCount);
 
+	}
+
+	public long getRecordCount(){
+		return recordCount;
 	}
 }

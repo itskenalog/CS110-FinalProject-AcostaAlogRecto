@@ -7,7 +7,9 @@ public class BTFile{
 	private RandomAccessFile f;
 	private final int OFFSET_VALUE = 0;
 	private final int START_OF_ENTRIES = 16;
-	private final int BYTESIZE = 256;
+	private final int BT_ORDER = 3;
+	private final int NODES_SIZE = 3*BT_ORDER-1;
+	private final int BYTESIZE = NODES_SIZE*8;
 
 	public BTFile(String filename) throws IOException{
 		File tf = new File(filename);
@@ -82,11 +84,16 @@ public class BTFile{
 		this.f.writeLong(n.accessChild(n.accessOrder()-1));
 	}
 
-	public void updateRootNode(long n)throws IOException{
+	public void updateRootNode(long n){
 		rootNode = n;
-		//write root node into the filethis.f.seek(OFFSET_VALUE);
-		this.f.seek(OFFSET_VALUE+START_OF_ENTRIES/2);
-		this.f.writeLong(this.rootNode);
+		try{
+			//write root node into the filethis.f.seek(OFFSET_VALUE);
+			this.f.seek(OFFSET_VALUE+START_OF_ENTRIES/2);
+			this.f.writeLong(this.rootNode);
+		}
+		catch(IOException ie){
+			
+		}
 	}
 
 	public long getRootNode(){

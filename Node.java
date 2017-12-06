@@ -6,7 +6,7 @@ public class Node{
 	private int[] keys; //array for the keys
 	private long[] offset; //position
 	private long[] children; //array for children
-	private final int BT_ORDER = 5; //order of the trees
+	private final int BT_ORDER = 3; //order of the trees
 
 	public Node(){
 		this.keys = new int[BT_ORDER];
@@ -37,16 +37,16 @@ public class Node{
 		this.children[i] = k;
 	}
 
-	public void assignOffset(long k, int i){
-		//assign offset to respective index
-		this.offset[i] = k;
-	}
-
 	public void assignKey(int k, int i){
 		//assign key to respective index
 		this.keys[i] = k;
 	}
 
+	public void assignOffset(long k, int i){
+		//assign offset to respective index
+		this.offset[i] = k;
+	}
+	
 	public void assignAll(long c, long k, long o, int i){
 		this.children[i] = c;
 		this.keys[i] = (int)k;
