@@ -306,7 +306,7 @@ public class btdb{
 				location.assignKey(key,i);
 				//put value in values file
 				values.write(value);
-				System.out.println("Sucessfully uploaded in values file");
+				System.out.println("Successfully uploaded in values file");
 				
 				//get the offset
 				//assign offset to the offset key
@@ -376,12 +376,16 @@ public class btdb{
 		else{
 			for(int i=0; i<location.accessOrder()-1; i++){
 				location.assignKey(key,i);
+<<<<<<< HEAD
 				try{
 					values.write(value);
 				}
 				catch(IOException ie){
 
 				}
+=======
+				values.write(value);
+>>>>>>> c20da3cad9f2c002b963dea169f827e2b85af323
 				System.out.println("Successfully updated");
 			}
 
