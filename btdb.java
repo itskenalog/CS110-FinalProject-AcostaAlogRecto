@@ -41,13 +41,28 @@ public class btdb{
 				}
 			}
 			else if(input[0].equals("update")){
-				//update();
+				updateFile(Integer.parseInt(input[1]), value);
 			}
 			else if(input[0].equals("select")){
-				//select();
+				select(Integer.parseInt(input[1]));
 			}
 			else{
-				//ERROR
+				System.out.println("ERROR Invalid Action");
+			}
+
+			for(int i=0; i<bt.getNumNodes(); i++){
+				Node alright = null;
+				try{
+					 alright = bt.read(i);
+				}
+				catch(IOException ie){
+
+				}
+				System.out.print(alright.accessParent()+" ");
+				for(int a=0; a<alright.accessOrder()-1; a++){
+					System.out.print(alright.accessChild(a)+" "+alright.accessKey(a)+" "+alright.accessOffset(a)+" ");
+				}
+				System.out.println(alright.accessChild(alright.accessOrder()-1));
 			}
 
 			inpu = in.nextLine();
@@ -66,7 +81,6 @@ public class btdb{
 		catch(IOException ie){
 			System.out.println("Cannot read node");
 		}
-		
 		//keep checking the keys until its less then
 		for(int i=0; i<n.accessOrder()-1; i++){
 			if(key<n.accessKey(i)||n.accessKey(i)==-1){
@@ -158,11 +172,13 @@ public class btdb{
 		//middle index goes up to the parent (get kung pangilang child siya, then it becomes the key with the same index)
 		int childNum = 0;
 		//while the first key of the child is not the same as the location of the child, keep counting
-		for(int i=0; i<parent.accessOrder()-1; i++){
+		for(int i=0; i<parent.accessOrder(); i++){
+			System.out.println(n.getLocation()+" "+parent.accessChild(i));
 			if(n.getLocation()==parent.accessChild(i)){
 				childNum = i;
 			}
 		}
+		System.out.println(childNum);
 
 		//move all the components one space based on where the child was found
 		parent.assignChild(parent.accessChild(parent.accessOrder()-1), parent.accessOrder());
@@ -232,6 +248,9 @@ public class btdb{
 
 
 
+
+
+
 		//right side becomes right child, this will just remain in the original node in the file if you did not create a new parent
 		Node rightChild = bt.read(n.getLocation());
 
@@ -254,23 +273,10 @@ public class btdb{
 		System.out.println("Done with left child and right child");
 
 
+
+
 		//now you have to upadte your parent since you made changes to its children
 		bt.update(parent, parent.getLocation());
-
-
-
-
-
-
-
-		for(int i=0; i<bt.getNumNodes(); i++){
-			Node alright = bt.read(i);
-			System.out.print(alright.accessParent()+" ");
-			for(int a=0; a<alright.accessOrder()-1; a++){
-				System.out.print(alright.accessChild(a)+" "+alright.accessKey(a)+" "+alright.accessOffset(a)+" ");
-			}
-			System.out.println(alright.accessChild(alright.accessOrder()-1));
-		}
 
 
 
@@ -340,12 +346,6 @@ public class btdb{
 			//whatever operation you do in the keys array, you do it in the offset array and children array (if they have children)
 		}
 
-		System.out.print(location.accessParent()+" ");
-		for(int a=0; a<location.accessOrder()-1; a++){
-			System.out.print(location.accessChild(a)+" "+location.accessKey(a)+" "+location.accessOffset(a)+" ");
-		}
-		System.out.println(location.accessChild(location.accessOrder()-1));
-
 		//check if the node is full, this means there is an element in the last node	
 		if(location.accessKey(location.accessOrder()-1)!=-1){
 			//then split it
@@ -357,43 +357,50 @@ public class btdb{
 			}
 		}
 		else{
-			System.out.println(location.getLocation());
-			//if not then just update the current node in the bt file
-			System.out.print(location.accessParent()+" ");
-			for(int i=0; i<location.accessOrder()-1; i++){
-				System.out.print(location.accessChild(i)+" "+location.accessKey(i)+" "+location.accessOffset(i)+" ");
-			}
-			System.out.println(location.accessChild(location.accessOrder()-1));			
+			//if not then just update the current node in the bt file		
 			bt.update(location, location.getLocation());
 		}
 	}
 
-	public static void update(int key, String value){
+	public static void updateFile(int key, String value){
 		Node location = search(key, bt.getRootNode());
-		if (location == null){
-			System.out.println("error, node not found");
+		if(location == null){
+			System.out.println("ERROR Key not Found");
 		}
 		else{
 			for(int i=0; i<location.accessOrder()-1; i++){
-				location.assignKey(key,i);
-<<<<<<< HEAD
-				try{
-					values.write(value);
-				}
-				catch(IOException ie){
+				if(key==location.accessKey(i)){	
+					try{
+						values.update(value, location.accessOffset(i));
+					}
+					catch(IOException ie){
 
+					}
+					break;
 				}
-=======
-				values.write(value);
->>>>>>> c20da3cad9f2c002b963dea169f827e2b85af323
-				System.out.println("Successfully updated");
 			}
-
+			System.out.println("Successfully updated");
 		}
-
 	}
 
 	public static void select(int key){
+		Node location = search(key, bt.getRootNode());
+		if(location == null){
+			System.out.println("ERROR Key not Found");
+		}
+		else{
+			String output = "";
+			for(int i=0; i<location.accessOrder()-1; i++){
+				if(key==location.accessKey(i)){
+					try{
+						output = values.access(location.accessOffset(i));
+					}
+					catch(IOException ie){
 
+					}
+					System.out.println(location.accessKey(i)+" ==> "+output);
+				}
+			}
+		}
 	}
 }

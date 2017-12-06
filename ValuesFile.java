@@ -47,15 +47,19 @@ public class ValuesFile{
 		//write the length of the string
 		//then write the string itself
 		//256 bytes per slot
-		byte[] byteArray = s.getBytes("UTF8");
-		this.f.seek(START_OF_ENTRIES+(recordCount)*BYTES);
-		this.f.writeShort(byteArray.length);
-		this.f.write(byteArray);
+		update(s, recordCount);
 
 		recordCount++;
 		this.f.seek(OFFSET_VALUE);
 		this.f.writeLong(recordCount);
 
+	}
+
+	public void update(String s, long i) throws IOException{
+		byte[] byteArray = s.getBytes("UTF8");
+		this.f.seek(START_OF_ENTRIES+(i)*BYTES);
+		this.f.writeShort(byteArray.length);
+		this.f.write(byteArray);
 	}
 
 	public long getRecordCount(){
